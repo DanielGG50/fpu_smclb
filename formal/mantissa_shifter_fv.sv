@@ -22,15 +22,15 @@ module mantissa_shifter_fv #(parameter MANTISSA_WIDTH=23)(
 	localparam BGREATER = 2'b00;
 	localparam EQUAL = 2'b11;
 
-	wire operand_a, operand_b;
+	wire [MANTISSA_WIDTH+3:0] operand_a, operand_b;
 
 	assign operand_a = {1'b1, ma, 3'b0};  // Addition of leading, guard, round and sticky bits
 	assign operand_b = {1'b1, mb, 3'b0};  // Addition of leading, guard, round and sticky bits
 
 
-	`AST(shifter, a_greater, exp_magnitude == AGREATER |=>, (mantissa_a_out == $past(operand_a)) )
-	`AST(shifter, b_greater, exp_magnitude == BGREATER |=>, (mantissa_b_out == $past(operand_b)) ) 
-	`AST(shifter, a_b_equal, exp_magnitude == EQUAL |=>, (mantissa_a_out == $past(operand_a)) )
+	`AST(shifter, a_greater, exp_magnitude == AGREATER |=>, (mantissa_a_out == $past(operand_a)) && (mantissa_b_out == $past(operand_b) >> $past(shift_spaces)) )
+	`AST(shifter, a_b_equal, exp_magnitude == EQUAL    |=>, (mantissa_a_out == $past(operand_a)) && (mantissa_b_out == $past(operand_b)) )
+	`AST(shifter, b_greater, exp_magnitude == BGREATER |=>, (mantissa_b_out == $past(operand_b)) && (mantissa_a_out == $past(operand_a) >> $past(shift_spaces)) )
 
 endmodule
 
