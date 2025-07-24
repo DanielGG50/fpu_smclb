@@ -26,7 +26,7 @@ module  exponent_sub #(parameter EXP_WIDTH = 8)(    // Module that represents th
     end         
 
     always @(*) begin
-        shift_spaces = a_greater ? exp_a - exp_b : a_less ? exp_b - exp_a : 8'b00000000;
+        shift_spaces = a_greater ? exp_a - exp_b : a_less ? exp_b - exp_a : 5'b00000;
     end 
     
 endmodule 
