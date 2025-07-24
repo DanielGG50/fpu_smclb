@@ -1,0 +1,13 @@
+superlint/jgproject/
+
+*.jou
+*.log
+*.str
+*.dcp
+*.bit
+*.bin
+*.vcd
+*.sw?
+.*.sw?
+
+jgproject/
