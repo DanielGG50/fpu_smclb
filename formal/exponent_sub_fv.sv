@@ -33,7 +33,7 @@ module exponent_sub_fv #(parameter EXP_WIDTH = 8)(    // Module that represents 
 	`AST(exp_value, a_greater, (exp_a > exp_b) && (x < MAX_SHIFT) |=>, (exp_disc == A_GREATER) && (exp_value == $past(exp_a)) && (shift_spaces == $past(x)) )
 	`AST(exp_value, b_greater, (exp_b > exp_a) && (y < MAX_SHIFT) |=>, (exp_disc == A_LESS) && (exp_value == $past(exp_b)) && (shift_spaces == $past(y)) )
 	`AST(exp_value, a_greater_max_shift, (exp_a > exp_b) && (x >= MAX_SHIFT) |=>, (exp_disc == A_GREATER) && (exp_value == $past(exp_a)) && (shift_spaces == MAX_SHIFT) )
-		`AST(exp_value, B_greater_max_shift, (exp_b > exp_a) && (y >= MAX_SHIFT) |=>, (exp_disc == A_LESS) && (exp_value == $past(exp_b)) && (shift_spaces == MAX_SHIFT) )
+	`AST(exp_value, B_greater_max_shift, (exp_b > exp_a) && (y >= MAX_SHIFT) |=>, (exp_disc == A_LESS) && (exp_value == $past(exp_b)) && (shift_spaces == MAX_SHIFT) )
 		
 endmodule
 
