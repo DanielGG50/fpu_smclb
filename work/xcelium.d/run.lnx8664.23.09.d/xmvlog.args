@@ -1,0 +1,31 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+-XLMODE
+./xcelium.d/run.lnx8664.23.09.d
+-RUNMODE
+../rtl/select_result.v
+../rtl/sign_logic.v
+../rtl/normalize_rounder.v
+../rtl/mantissa_add_sub.v
+../rtl/mantissa_shifter.v
+../rtl/delay_chain.v
+../rtl/exponent_sub.v
+../rtl/d_ff.v
+../rtl/exception_block.v
+../rtl/add_sub_main.v
+../verif/fpu_add_sub_tb.sv
+-DEFINE
+alfacen_noaxi_base_test
+-sv
+-CDSLIB
+./xcelium.d/run.lnx8664.23.09.d/cdsrun.lib
+-HDLVAR
+./xcelium.d/run.lnx8664.23.09.d/hdlrun.var
+-no_analogsolver
+-MESSAGES
+-UPDATE
+-XLLIBSTORE
+./xcelium.d/run.lnx8664.23.09.d/xllibs
+-ALLOWUNBOUND

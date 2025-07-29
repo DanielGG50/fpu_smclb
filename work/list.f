@@ -1,13 +1,12 @@
-../rtl/global_params.sv
-../rtl/normalize_rounder.sv
-../rtl/mantissa_add_sub.sv
-../rtl/mantissa_shifter.sv
-../rtl/exponent_sub_upd.sv
-../rtl/sign_logic.sv
-../rtl/add_sub_main.sv
+../rtl/select_result.v
+../rtl/sign_logic.v
+../rtl/normalize_rounder.v
+../rtl/mantissa_add_sub.v
+../rtl/mantissa_shifter.v
+../rtl/delay_chain.v
+../rtl/exponent_sub.v
+../rtl/d_ff.v
+../rtl/exception_block.v
+../rtl/add_sub_main.v
 
-#../verif/parameters.sv
-#../verif/interface.sv
-#../verif/covergroups.sv
-#../verif/add_sub_asserts.sv
-#../verif/tb_top.sv
+../verif/fpu_add_sub_tb.sv

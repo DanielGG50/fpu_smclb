@@ -103,3 +103,4 @@ module exception_block #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23) (
   end
 
 endmodule
+

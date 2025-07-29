@@ -16,7 +16,7 @@ module add_sub_main #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
     wire a_sign = a[WIDTH-1];
     wire b_sign = b[WIDTH-1];
 
-    wire operation_select_for_input_reg = operation_select;
+    //wire operation_select_for_input_reg = operation_select;
 
     // Signals between exponent_sub and mantissa_shifter
     wire [4:0] shift_spaces;
@@ -60,18 +60,31 @@ module add_sub_main #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
     );
 
     // Necessary ffs to syncronize op_sel and signs with mantissa shifter output
-    wire operation_select_dlyd_2;
+    wire operation_select_dlyd_1, operation_select_dlyd_2, operation_select_dlyd_dummy;
     wire a_sign_dlyd_1, a_sign_dlyd_2;
     wire b_sign_dlyd_1, b_sign_dlyd_2;
         
         // Operation Select
-    delay_chain #(.WIDTH(1), .STAGES(2)) op_sel_dly (
+    d_ff #(.WIDTH(1)) op_sel_dly_0 (
         .clk(clk),
         .arst_n(arst_n),
-        .d(operation_select_for_input_reg),
+        .d(operation_select),
+        .q(operation_select_dlyd_dummy)
+    ); 
+
+    d_ff #(.WIDTH(1)) op_sel_dly_1 (
+        .clk(clk),
+        .arst_n(arst_n),
+        .d(operation_select_dlyd_dummy),
+        .q(operation_select_dlyd_1)
+    ); 
+
+	 d_ff #(.WIDTH(1)) op_sel_dly_2 (
+        .clk(clk),
+        .arst_n(arst_n),
+        .d(operation_select_dlyd_1),
         .q(operation_select_dlyd_2)
     );
-
         // A_sign
     delay_chain #(.WIDTH(1), .STAGES(2)) a_sign_dly_1_2 (
         .clk(clk),
@@ -189,8 +202,8 @@ module add_sub_main #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
     sign_logic sign_logic_inst (
         .clk(clk),
         .arst_n(arst_n),
-        .sign_a(a_sign_dlyd_2),
-        .sign_b(b_sign_dlyd_2),
+        .sign_a(a_sign),
+        .sign_b(b_sign),
         .exp_a(a_exp),
         .exp_b(b_exp),
         .mantissa_a(a_frac),
@@ -199,8 +212,24 @@ module add_sub_main #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
         .sign_r(result_sign)
     );
 
+    wire result_sign_dlyd_2, result_sign_dlyd_3;
+    // Necessary ff_s to syncronize sign logic with normalize rounder
+    d_ff #(.WIDTH(1)) result_sign_dly_2 (
+        .clk(clk),
+        .arst_n(arst_n),
+        .d(result_sign),
+        .q(result_sign_dlyd_2)
+    );
+    
+      d_ff #(.WIDTH(1)) result_sign_dly_3 (
+        .clk(clk),
+        .arst_n(arst_n),
+        .d(result_sign_dlyd_2),
+        .q(result_sign_dlyd_3)
+    );      
+    
     // Exponent sub module
-    exponent_sub #(.EXP_WIDTH(EXP_BITS)) exp_sub_inst (
+    exponent_sub #(.EXP_WIDTH(EXP_BITS), .MANT_WIDTH(MANT_BITS)) exp_sub_inst (
         .clk(clk),
         .arst_n(arst_n),
         .exp_a(a_exp),
@@ -245,7 +274,7 @@ module add_sub_main #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
         .b_sign(b_sign_dlyd_3),
         .a_sign_scnd(a_sign_dlyd_4), // Another delay because goes into secons stage
         .b_sign_scnd(b_sign_dlyd_4),
-        .result_sign(result_sign),
+        .result_sign(result_sign_dlyd_3),
         .carry_out(carry_out),
         .clk(clk),
         .arst_n(arst_n),
@@ -263,3 +292,4 @@ module add_sub_main #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
     );
 
 endmodule
+

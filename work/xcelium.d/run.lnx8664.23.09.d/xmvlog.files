@@ -1,0 +1,15 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+/home/joc/C2_25/fpu_smclb/rtl/select_result.v
+/home/joc/C2_25/fpu_smclb/rtl/sign_logic.v
+/home/joc/C2_25/fpu_smclb/rtl/normalize_rounder.v
+/home/joc/C2_25/fpu_smclb/rtl/mantissa_add_sub.v
+/home/joc/C2_25/fpu_smclb/rtl/mantissa_shifter.v
+/home/joc/C2_25/fpu_smclb/rtl/delay_chain.v
+/home/joc/C2_25/fpu_smclb/rtl/exponent_sub.v
+/home/joc/C2_25/fpu_smclb/rtl/d_ff.v
+/home/joc/C2_25/fpu_smclb/rtl/exception_block.v
+/home/joc/C2_25/fpu_smclb/rtl/add_sub_main.v
+/home/joc/C2_25/fpu_smclb/verif/fpu_add_sub_tb.sv
