@@ -36,10 +36,12 @@ module exception_block_fv(
   		// Both operations
 				// NaNs
   `AST(fpu, input_nan, ((a[30:23] == 255 && a[22:0] > 0) || (b[30:23] == 255 && b[22:0] > 0)) |=>, result == CAN_NAN)
-				// exception flag
+	
+			// exception flag
 	logic a_exception_value = a[30:0] == 31'h00000000 || a[30:0] == 31'h7F800000 || (a[30:23] == 255 && a[22:0] > 0);
 	logic b_exception_value = b[30:0] == 31'h00000000 || b[30:0] == 31'h7F800000 || (b[30:23] == 255 && b[22:0] > 0);
-  `AST(fpu, exception_flag_high, (a_exception_value || b_exception_value) |=>, exception)
+  
+	`AST(fpu, exception_flag_high, (a_exception_value || b_exception_value) |=>, exception)
 	`AST(fpu, exception_flag_low, (~a_exception_value && ~b_exception_value) |=>, ~exception)
 			// Both a & B zero
 	`AST(fpu, inputs_eq_zero, a[30:0] == 0 && b[30:0] == 0 |=>, (result[30:0] == 0) && (result[31] == ($past(a[31]) & $past(b[31]))))
