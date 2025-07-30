@@ -4,7 +4,7 @@ module mantissa_shifter_fv #(parameter MANTISSA_WIDTH=23)(
 	input [MANTISSA_WIDTH-1:0] ma,
 	input [MANTISSA_WIDTH-1:0] mb,
 	input [4:0] shift_spaces,
-	input [1:0] exp_magnitude,
+	input [1:0] exp_disc,
 	input [MANTISSA_WIDTH+3:0] mantissa_a_out,
 	input [MANTISSA_WIDTH+3:0] mantissa_b_out
 );
@@ -28,9 +28,9 @@ module mantissa_shifter_fv #(parameter MANTISSA_WIDTH=23)(
 	assign operand_b = {1'b1, mb, 3'b0};  // Addition of leading, guard, round and sticky bits
 
 
-	`AST(shifter, a_greater, exp_magnitude == AGREATER |=>, (mantissa_a_out == $past(operand_a)) && (mantissa_b_out == $past(operand_b) >> $past(shift_spaces)) )
-	`AST(shifter, a_b_equal, exp_magnitude == EQUAL    |=>, (mantissa_a_out == $past(operand_a)) && (mantissa_b_out == $past(operand_b)) )
-	`AST(shifter, b_greater, exp_magnitude == BGREATER |=>, (mantissa_b_out == $past(operand_b)) && (mantissa_a_out == $past(operand_a) >> $past(shift_spaces)) )
+	`AST(shifter, a_greater, exp_disc == AGREATER |=>, (mantissa_a_out == $past(operand_a)) && (mantissa_b_out == $past(operand_b) >> $past(shift_spaces)) )
+	`AST(shifter, a_b_equal, exp_disc == EQUAL    |=>, (mantissa_a_out == $past(operand_a)) && (mantissa_b_out == $past(operand_b)) )
+	`AST(shifter, b_greater, exp_disc == BGREATER |=>, (mantissa_b_out == $past(operand_b)) && (mantissa_a_out == $past(operand_a) >> $past(shift_spaces)) )
 
 endmodule
 

@@ -21,7 +21,7 @@ module exception_block_fv #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23) 
   FLAG_ZERO_MIN_SOME = 3'b110,
   FLAG_SUB_SAME_VAL  = 3'b111;
 
-
+	logic a_nan, b_nan;
 
   `define AST(block=fifo, name=no_name, precond=1'b1 |->, consq=1'b0) \
   ``block``_ast_``name``: assert property (@(posedge clk) disable iff(!arst_n) ``precond`` ``consq``);
@@ -36,19 +36,21 @@ module exception_block_fv #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23) 
   //`ASM(fpu, sub, , operation_select == 1'b1)
 	//`ASM(fpu, add, , operation_select == 1'b0)
 
-	`ASM(fpu, a_or_b_nan, ,((a[30:23] == (EXP_BITS**2-1)) && (a[22:0] > 0)) )
+	//`ASM(fpu, a_is_nan, , ((a[30:23] == 8'hFF) && (a[22:0] != 0)))
+	//`ASM(fpu, b_is_nan, , ((b[30:23] == 8'hFF) && (b[22:0] != 0)))
 
   ///////// ASSERTIONS /////////////////
   		// Both operations
 				// NaNs
-	`AST(fpu, input_nan, ((a[30:23] == (EXP_BITS**2-1) && a[22:0] > 0) || (b[30:23] == (EXP_BITS**2-1) && b[22:0] > 0)) |->, ##2 exception_flag == FLAG_NAN )
+	`AST(fpu, input_nan, ( ((a[30:23] == 8'hFF) && (a[22:0] != 0)) || ((b[30:23] == 8'hFF) && (b[22:0] != 0)) ) |=>, exception_flag == FLAG_NAN)
 	
 			// exception flag
 	logic a_exception_value = a[30:0] == 31'h00000000 || a[30:0] == 31'h7F800000 || (a[30:23] == 255 && a[22:0] > 0);
 	logic b_exception_value = b[30:0] == 31'h00000000 || b[30:0] == 31'h7F800000 || (b[30:23] == 255 && b[22:0] > 0);
-  
-	//`AST(fpu, exception_case_high, (a_exception_value || b_exception_value) |=>, exception_flag != 0)
-	//`AST(fpu, exception_case_low, (~a_exception_value && ~b_exception_value) |=>, exception_flag == 0)
+	logic sub_same_value = (a == b) && operation_select || (a[30:0] == b[30:0] && a[31] == ~b[31] && ~operation_select);   
+
+	`AST(fpu, exception_case_high, (a_exception_value || b_exception_value || sub_same_value) |=>, exception_flag != 0)
+	`AST(fpu, exception_case_low, (~a_exception_value && ~b_exception_value && ~sub_same_value) |=>, exception_flag == 0)
 			// Both a & B zero
 	//`AST(fpu, inputs_eq_zero, a[30:0] == 0 && b[30:0] == 0 |=>, exception_flag == FLAG_ZERO_MIN_ZERO)
 

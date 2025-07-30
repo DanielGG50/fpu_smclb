@@ -4,8 +4,8 @@
 1753823649 /home/joc/C2_25/fpu_smclb/rtl/mantissa_shifter.v
 1753824366 /home/joc/C2_25/fpu_smclb/rtl/exponent_sub.v
 1753315687 /home/joc/C2_25/fpu_smclb/rtl/mantissa_add_sub.v
-1753805558 /home/joc/C2_25/fpu_smclb/rtl/select_result.v
+1753832735 /home/joc/C2_25/fpu_smclb/rtl/select_result.v
 1753805558 /home/joc/C2_25/fpu_smclb/rtl/delay_chain.v
 1753805558 /home/joc/C2_25/fpu_smclb/rtl/d_ff.v
-1753814865 /home/joc/C2_25/fpu_smclb/rtl/exception_block.v
+1753913601 /home/joc/C2_25/fpu_smclb/rtl/exception_block.v
 1753823599 /home/joc/C2_25/fpu_smclb/rtl/add_sub_main.v
