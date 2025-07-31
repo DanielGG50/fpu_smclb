@@ -7,11 +7,15 @@ module exception_block_fv #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23) 
   input logic [2:0] exception_flag,
   input logic [WIDTH-2:0] copied_operand
 );
-
-  // Specific Values
+  
+		// Specific Values
+  localparam POS_INF = 32'h7F800000;
+  localparam POS_ZERO = 32'h00000000;
+  localparam NEG_ZERO = 32'h80000000;
+  localparam NEG_INF = 32'hFF800000;
   localparam CAN_NAN = 32'h7fC00000;
 
-	localparam [2:0]
+  localparam [2:0]
   FLAG_NONE          = 3'b000,
   FLAG_NAN           = 3'b001,
   FLAG_COPY_A        = 3'b010,
@@ -49,40 +53,40 @@ module exception_block_fv #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23) 
 	logic b_exception_value = b[30:0] == 31'h00000000 || b[30:0] == 31'h7F800000 || (b[30:23] == 255 && b[22:0] > 0);
 	logic sub_same_value = (a == b) && operation_select || (a[30:0] == b[30:0] && a[31] == ~b[31] && ~operation_select);   
 
-	`AST(fpu, exception_case_high, (a_exception_value || b_exception_value || sub_same_value) |=>, exception_flag != 0)
-	`AST(fpu, exception_case_low, (~a_exception_value && ~b_exception_value && ~sub_same_value) |=>, exception_flag == 0)
+	`AST(fpu, exception, (a_exception_value || b_exception_value || sub_same_value) |=>, exception_flag != 0)
+	`AST(fpu, no_exception, (~a_exception_value && ~b_exception_value && ~sub_same_value) |=>, exception_flag == 0)
 			// Both a & B zero
-	//`AST(fpu, inputs_eq_zero, a[30:0] == 0 && b[30:0] == 0 |=>, exception_flag == FLAG_ZERO_MIN_ZERO)
+	`AST(fpu, inputs_eq_zero, a[30:0] == 0 && b[30:0] == 0 |=>, exception_flag == FLAG_ZERO_MIN_ZERO)
 
   		// Sub
   			// Infinites
-  //`AST(sub, pinf_min_pinf, ((operation_select == 1'b1) && (a == POS_INF) && (b == POS_INF)) |=>, result == CAN_NAN)
-  //`AST(sub, pinf_min_ninf, ((operation_select == 1'b1) && (a == POS_INF) && (b == NEG_INF)) |=>, result == POS_INF)
-  //`AST(sub, ninf_min_ninf, ((operation_select == 1'b1) && (a == NEG_INF) && (b == NEG_INF)) |=>, result == CAN_NAN)
-  //`AST(sub, ninf_min_pinf, ((operation_select == 1'b1) && (a == NEG_INF) && (b == POS_INF)) |=>, result == NEG_INF)
+  `AST(sub, pinf_min_pinf, ((operation_select == 1'b1) && (a == POS_INF) && (b == POS_INF)) |=>, exception_flag == FLAG_NAN)
+  `AST(sub, pinf_min_ninf, ((operation_select == 1'b1) && (a == POS_INF) && (b == NEG_INF)) |=>, exception_flag == FLAG_COPY_A)
+  `AST(sub, ninf_min_ninf, ((operation_select == 1'b1) && (a == NEG_INF) && (b == NEG_INF)) |=>, exception_flag == FLAG_NAN)
+	`AST(sub, ninf_min_pinf, ((operation_select == 1'b1) && (a == NEG_INF) && (b == POS_INF)) |=>, exception_flag == FLAG_COPY_A)
   			// finites
-  //`AST(sub, pinf_min_fin,  ((operation_select == 1'b1) && ((b[30:23] < 8'hFF) && (b[22:0] > 0)) && (a == POS_INF)) |=>, result == POS_INF)
-  //`AST(sub, ninf_min_fin,  ((operation_select == 1'b1) && ((b[30:23] < 8'hFF) && (b[22:0] > 0)) && (a == NEG_INF)) |=>, result == NEG_INF)
-  //`AST(sub, fin_min_pinf,  ((operation_select == 1'b1) && ((a[30:23] < 8'hFF) && (a[22:0] > 0)) && (b == POS_INF)) |=>, result == NEG_INF)
-  //`AST(sub, fin_min_ninf,  ((operation_select == 1'b1) && ((a[30:23] < 8'hFF) && (a[22:0] > 0)) && (b == NEG_INF)) |=>, result == POS_INF)
+  `AST(sub, pinf_min_fin,  ((operation_select == 1'b1) && ((b[30:23] < 8'hFF) && (b[22:0] > 0)) && (a == POS_INF)) |=>, exception_flag == FLAG_COPY_A)
+  `AST(sub, ninf_min_fin,  ((operation_select == 1'b1) && ((b[30:23] < 8'hFF) && (b[22:0] > 0)) && (a == NEG_INF)) |=>, exception_flag  == FLAG_COPY_A)
+  `AST(sub, fin_min_pinf,  ((operation_select == 1'b1) && ((a[30:23] < 8'hFF) && (a[22:0] > 0)) && (b == POS_INF)) |=>, exception_flag == FLAG_FIN_MIN_INF)
+  `AST(sub, fin_min_ninf,  ((operation_select == 1'b1) && ((a[30:23] < 8'hFF) && (a[22:0] > 0)) && (b == NEG_INF)) |=>, exception_flag == FLAG_FIN_MIN_INF)
 			// Zeros
-  //`AST(sub, fin_min_zero, ((operation_select == 1'b1) && ((a[30:23] < 8'hFF) && (a[22:0] > 0)) && (b[30:0] == 0)) |=>, result == $past(a))
-  //`AST(sub, zero_min_fin, ((operation_select == 1'b1) && ((b[30:23] < 8'hFF) && (b[22:0] > 0)) && (a == POS_ZERO)) |=>, (result[30:0] == $past(b[30:0]) && result[31] == !($past(b[31]))))
+  `AST(sub, fin_min_zero, ((operation_select == 1'b1) && ((a[30:23] < 8'hFF) && (a[22:0] > 0)) && (b[30:0] == 0)) |=>, exception_flag == FLAG_COPY_A)
+  `AST(sub, zero_min_fin, ((operation_select == 1'b1) && ((b[30:23] < 8'hFF) && (b[22:0] > 0)) && (a == POS_ZERO)) |=>, exception_flag == FLAG_ZERO_MIN_SOME)
 
 	  		// Add
   			// Infinites
-  //`AST(add, pinf_pls_pinf, ((operation_select == 1'b0) && (a == POS_INF) && (b == POS_INF)) |=>, result == POS_INF)
-  //`AST(add, pinf_pls_ninf, ((operation_select == 1'b0) && (a == POS_INF) && (b == NEG_INF)) |=>, result == CAN_NAN)
-  //`AST(add, ninf_pls_ninf, ((operation_select == 1'b0) && (a == NEG_INF) && (b == NEG_INF)) |=>, result == NEG_INF)
-  //`AST(add, ninf_pls_pinf, ((operation_select == 1'b0) && (a == NEG_INF) && (b == POS_INF)) |=>, result == CAN_NAN)
+ 	`AST(add, pinf_pls_pinf, ((operation_select == 1'b0) && (a == POS_INF) && (b == POS_INF)) |=>, exception_flag  == FLAG_COPY_A)
+  `AST(add, pinf_pls_ninf, ((operation_select == 1'b0) && (a == POS_INF) && (b == NEG_INF)) |=>, exception_flag   == FLAG_NAN)
+  `AST(add, ninf_pls_ninf, ((operation_select == 1'b0) && (a == NEG_INF) && (b == NEG_INF)) |=>, exception_flag == FLAG_COPY_A)
+  `AST(add, ninf_pls_pinf, ((operation_select == 1'b0) && (a == NEG_INF) && (b == POS_INF)) |=>, exception_flag == FLAG_NAN)
   			// finites
-  //`AST(add, pinf_pls_fin,  ((operation_select == 1'b0) && ((b[30:23] < 8'hFF) && (b[22:0] > 0)) && (a == POS_INF)) |=>, result == POS_INF)
-  //`AST(add, ninf_pls_fin,  ((operation_select == 1'b0) && ((b[30:23] < 8'hFF) && (b[22:0] > 0)) && (a == NEG_INF)) |=>, result == NEG_INF)
-  //`AST(add, fin_pls_pinf,  ((operation_select == 1'b0) && ((a[30:23] < 8'hFF) && (a[22:0] > 0)) && (b == POS_INF)) |=>, result == POS_INF)
-  //`AST(add, fin_pls_ninf,  ((operation_select == 1'b0) && ((a[30:23] < 8'hFF) && (a[22:0] > 0)) && (b == NEG_INF)) |=>, result == NEG_INF)
+  `AST(add, pinf_pls_fin,  ((operation_select == 1'b0) && ((b[30:23] < 8'hFF) && (b[22:0] > 0)) && (a == POS_INF)) |=>, exception_flag == FLAG_COPY_A)
+  `AST(add, ninf_pls_fin,  ((operation_select == 1'b0) && ((b[30:23] < 8'hFF) && (b[22:0] > 0)) && (a == NEG_INF)) |=>, exception_flag == FLAG_COPY_A)
+  `AST(add, fin_pls_pinf,  ((operation_select == 1'b0) && ((a[30:23] < 8'hFF) && (a[22:0] > 0)) && (b == POS_INF)) |=>, exception_flag == FLAG_COPY_B)
+  `AST(add, fin_pls_ninf,  ((operation_select == 1'b0) && ((a[30:23] < 8'hFF) && (a[22:0] > 0)) && (b == NEG_INF)) |=>, exception_flag == FLAG_COPY_B)
 			// Zeros
-  //`AST(add, fin_pls_zero, ((operation_select == 1'b0) && ((a[30:23] < 8'hFF) && (a[22:0] > 0)) && (b[30:0] == 0)) |=>, result == $past(a))
-  //`AST(add, zero_pls_fin, ((operation_select == 1'b0) && ((b[30:23] < 8'hFF) && (b[22:0] > 0)) && (a == POS_ZERO)) |=>, result == $past(b))
+  `AST(add, fin_pls_zero, ((operation_select == 1'b0) && ((a[30:23] < 8'hFF) && (a[22:0] > 0)) && (b[30:0] == 0)) |=>, exception_flag == FLAG_COPY_A)
+  `AST(add, zero_pls_fin, ((operation_select == 1'b0) && ((b[30:23] < 8'hFF) && (b[22:0] > 0)) && (a == POS_ZERO)) |=>,exception_flag == FLAG_COPY_B)
 
 endmodule
 

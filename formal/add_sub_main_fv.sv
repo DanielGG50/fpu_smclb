@@ -19,8 +19,7 @@ module add_sub_main_fv #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
 	`define COV(block=fifo, name=no_name, precond=1'b1 |->, consq=1'b0) \
 	``block``_cov_``name``: cover property (@(posedge clk) disable iff(!arst_n) ``precond`` ``consq``);
 
-
-	`AST(fpu, input_nan, ((a[30:23] == (EXP_BITS**2-1) && a[22:0] > 0) || (b[30:23] == (EXP_BITS**2-1) && b[22:0] > 0)) |->, ##(RSLT_DLY+1) R == CAN_NAN)
+	`AST(fpu, input_nan, ( ((a[30:23] == 8'hFF) && (a[22:0] != 0)) || ((b[30:23] == 8'hFF) && (b[22:0] != 0)) ) |->, ##(RSLT_DLY) R == CAN_NAN)
 
 
 endmodule
