@@ -191,7 +191,7 @@ module add_sub_main #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
         .arst_n(arst_n),
         .a(a),
         .b(b),
-        .operation_select(operation_select),
+        .operation_select(operation_select_dlyd_dummy), // Used dummy register
         .exception_flag(exception_flag),
         .copied_operand(copied_operand)
     );

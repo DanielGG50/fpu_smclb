@@ -90,7 +90,7 @@ module exception_block #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23) (
 			//end else if (({a_sign, a_exp, a_frac} == {b_sign, b_exp, b_frac}) && !operation_select) begin // A - A = 0
   		//	exception_flag <= FLAG_SUB_SAME_VAL;
 			//	copied_operand <= {(WIDTH-1){1'b0}};	
-	*/
+	
 			end else if ((a_exp == b_exp) && (a_frac == b_frac)) begin 
   			if (~operation_select) begin
 					if (a_sign == b_sign) begin
@@ -111,7 +111,15 @@ module exception_block #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23) (
 			end else begin
       	exception_flag <= FLAG_NONE; // No exceptions
       end
-	  	
+	*/
+      end else if (({a_sign, a_exp, a_frac} == {b_sign, b_exp, b_frac} && operation_select) || 
+                  ({a_exp, a_frac} == {b_exp, b_frac} && (a_sign == ~b_sign) && (~operation_select))) begin
+        exception_flag <= FLAG_SUB_SAME_VAL; // A - A = 0
+        copied_operand <= {(WIDTH-1){1'b0}}; // Result is zero
+      end else begin
+         exception_flag <= FLAG_NONE; // No exceptions
+      end
+  	
 		end
   end
 endmodule
