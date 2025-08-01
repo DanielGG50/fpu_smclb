@@ -127,8 +127,6 @@ module add_sub_main #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
     wire b_sign_dlyd_3, b_sign_dlyd_4, b_sign_dlyd_5;
 
         // Exception flag 
-    wire exception_flag_dlyd_1;
-
     delay_chain #(.WIDTH(3), .STAGES(4)) exception_flag_dly (
         .clk(clk),
         .arst_n(arst_n),

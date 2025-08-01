@@ -6,6 +6,6 @@
 1753805558 /home/joc/C2_25/fpu_smclb/rtl/delay_chain.v
 1753824366 /home/joc/C2_25/fpu_smclb/rtl/exponent_sub.v
 1753805558 /home/joc/C2_25/fpu_smclb/rtl/d_ff.v
-1753913601 /home/joc/C2_25/fpu_smclb/rtl/exception_block.v
-1753823599 /home/joc/C2_25/fpu_smclb/rtl/add_sub_main.v
-1753826448 /home/joc/C2_25/fpu_smclb/verif/fpu_add_sub_tb.sv
+1754074988 /home/joc/C2_25/fpu_smclb/rtl/exception_block.v
+1753985502 /home/joc/C2_25/fpu_smclb/rtl/add_sub_main.v
+1754072214 /home/joc/C2_25/fpu_smclb/verif/fpu_add_sub_tb.sv

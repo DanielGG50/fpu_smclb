@@ -1,4 +1,4 @@
-1753826448 /home/joc/C2_25/fpu_smclb/verif/fpu_add_sub_tb.sv
+1754072214 /home/joc/C2_25/fpu_smclb/verif/fpu_add_sub_tb.sv
 1753805558 /home/joc/C2_25/fpu_smclb/rtl/normalize_rounder.v
 1753805558 /home/joc/C2_25/fpu_smclb/rtl/sign_logic.v
 1753823649 /home/joc/C2_25/fpu_smclb/rtl/mantissa_shifter.v
@@ -7,5 +7,5 @@
 1753832735 /home/joc/C2_25/fpu_smclb/rtl/select_result.v
 1753805558 /home/joc/C2_25/fpu_smclb/rtl/delay_chain.v
 1753805558 /home/joc/C2_25/fpu_smclb/rtl/d_ff.v
-1753913601 /home/joc/C2_25/fpu_smclb/rtl/exception_block.v
-1753823599 /home/joc/C2_25/fpu_smclb/rtl/add_sub_main.v
+1754074988 /home/joc/C2_25/fpu_smclb/rtl/exception_block.v
+1753985502 /home/joc/C2_25/fpu_smclb/rtl/add_sub_main.v

@@ -42,8 +42,8 @@ module fpu_add_sub_tb;
     B = 32'h41200000;
 
 		@(posedge clk)
-    A = 32'hffffffff;
-    B = 32'h9fffffff;
+    A = 32'h7F800000;
+    B = 32'h7F800000;
 
     // Denormalized
     @(posedge clk)
@@ -58,13 +58,13 @@ module fpu_add_sub_tb;
 
     // Suma normal
     @(posedge clk);
-    A = 32'h41200000;  // 10.0
-    B = 32'h40a00000;  // 5.0
+	  A = 32'h41200000;  // 10.0
+    B = 32'h40a00000;  // Changed 4 for C
 		
     // Suma normal
     @(posedge clk);
     op = 1'b1;
-    A = 32'h4120400a;  
+		A = 32'h4120400a;  
     B = 32'hc120400a;  
    
     @(posedge clk);
@@ -80,9 +80,8 @@ module fpu_add_sub_tb;
     op = 1'b1;
     A = 32'h4120400a;  
     B = 32'h4120400a;      
-  
-		op = 1'b0;
 		@(posedge clk);
+		op = 1'b0;
     A = 32'hC1200000;  // 10.0
     B = 32'hC0a00000;  // 5.0
 
