@@ -15,7 +15,9 @@
 ../rtl/d_ff.v
 ../rtl/exception_block.v
 ../rtl/add_sub_main.v
-../verif/fpu_add_sub_tb.sv
+../rtl/ip_tile_daniel.v
+../verif/tb_ip_tile_daniel.sv
+../verif/interface_ip_tile.sv
 -DEFINE
 alfacen_noaxi_base_test
 -sv

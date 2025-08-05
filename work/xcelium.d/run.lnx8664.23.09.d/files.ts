@@ -7,5 +7,8 @@
 1753824366 /home/joc/C2_25/fpu_smclb/rtl/exponent_sub.v
 1753805558 /home/joc/C2_25/fpu_smclb/rtl/d_ff.v
 1754075966 /home/joc/C2_25/fpu_smclb/rtl/exception_block.v
-1754076052 /home/joc/C2_25/fpu_smclb/rtl/add_sub_main.v
+1754419435 /home/joc/C2_25/fpu_smclb/rtl/add_sub_main.v
 1754072214 /home/joc/C2_25/fpu_smclb/verif/fpu_add_sub_tb.sv
+1754419931 /home/joc/C2_25/fpu_smclb/rtl/ip_tile_daniel.v
+1754418945 /home/joc/C2_25/fpu_smclb/verif/interface_ip_tile.sv
+1754420881 /home/joc/C2_25/fpu_smclb/verif/tb_ip_tile_daniel.sv

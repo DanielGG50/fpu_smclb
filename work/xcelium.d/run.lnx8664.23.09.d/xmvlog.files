@@ -12,4 +12,6 @@
 /home/joc/C2_25/fpu_smclb/rtl/d_ff.v
 /home/joc/C2_25/fpu_smclb/rtl/exception_block.v
 /home/joc/C2_25/fpu_smclb/rtl/add_sub_main.v
-/home/joc/C2_25/fpu_smclb/verif/fpu_add_sub_tb.sv
+/home/joc/C2_25/fpu_smclb/rtl/ip_tile_daniel.v
+/home/joc/C2_25/fpu_smclb/verif/tb_ip_tile_daniel.sv
+/home/joc/C2_25/fpu_smclb/verif/interface_ip_tile.sv
