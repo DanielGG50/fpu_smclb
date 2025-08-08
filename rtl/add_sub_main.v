@@ -300,13 +300,15 @@ module add_sub_main #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
     input operation_select,
     input clk,
     input arst_n,
-    output [WIDTH-1:0] R
+    output [WIDTH-1:0] data_reg_c//R
 );
+
+    wire [WIDTH-1:0] R;
 
     wire [WIDTH-1:0] a_en, b_en;
 
-    assign a_en = en ? a : {WIDTH{1'b0}};
-    assign b_en = en ? b : {WIDTH{1'b0}};
+    assign a_en = en ? a : 0;
+    assign b_en = en ? b : 0;
 
     // Divide inputs
     wire [EXP_BITS-1:0] a_exp = a_en[WIDTH-2:MANT_BITS];
@@ -342,6 +344,8 @@ module add_sub_main #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
     wire [2:0] exception_flag;
     wire [WIDTH-2:0] copied_operand;
 
+    // Signals between normalize rounder and select result
+    wire [WIDTH-1:0] normal_result;
 
     // Necessary ffs to syncronize mantissas with exponent_sub output
     wire [MANT_BITS-1:0] a_frac_dlyd;
@@ -476,6 +480,23 @@ module add_sub_main #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
         .q(b_sign_dlyd_5)
     );
 
+    // Necessary ff_s to syncronize sign logic with normalize rounder
+    wire result_sign_dlyd_2, result_sign_dlyd_3;
+    
+    d_ff #(.WIDTH(1)) result_sign_dly_2 (
+        .clk(clk),
+        .arst_n(arst_n),
+        .d(result_sign),
+        .q(result_sign_dlyd_2)
+    );
+    
+      d_ff #(.WIDTH(1)) result_sign_dly_3 (
+        .clk(clk),
+        .arst_n(arst_n),
+        .d(result_sign_dlyd_2),
+        .q(result_sign_dlyd_3)
+    );      
+
     // Exception block module
     exception_block #(.WIDTH(WIDTH), .EXP_BITS(EXP_BITS), .MANT_BITS(MANT_BITS)) except_inst (
         .clk(clk),
@@ -500,22 +521,6 @@ module add_sub_main #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
         .operation_select(operation_select),
         .sign_r(result_sign)
     );
-
-    wire result_sign_dlyd_2, result_sign_dlyd_3;
-    // Necessary ff_s to syncronize sign logic with normalize rounder
-    d_ff #(.WIDTH(1)) result_sign_dly_2 (
-        .clk(clk),
-        .arst_n(arst_n),
-        .d(result_sign),
-        .q(result_sign_dlyd_2)
-    );
-    
-      d_ff #(.WIDTH(1)) result_sign_dly_3 (
-        .clk(clk),
-        .arst_n(arst_n),
-        .d(result_sign_dlyd_2),
-        .q(result_sign_dlyd_3)
-    );      
     
     // Exponent sub module
     exponent_sub #(.EXP_WIDTH(EXP_BITS)) exp_sub_inst (
@@ -540,6 +545,7 @@ module add_sub_main #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
         .mantissa_b_out(mantissa_b_shifted)
     );
 
+    // mantissa add sub module
     mantissa_add_sub #(.MANTISSA_WIDTH(MANT_BITS)) mant_add_sub_inst (
         .clk(clk),
         .arst_n(arst_n),
@@ -553,15 +559,13 @@ module add_sub_main #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
     );
 
     // Normalize and rounder module
-    wire [WIDTH-1:0] normal_result;
-
     normalize_rounder #(.WIDTH(WIDTH)) norm_round_inst (
         .result_mant(mantissa_result),
         .op(operation_select_dlyd_3),
         .exp_result(exp_value_dlyd_3),
         .a_sign(a_sign_dlyd_3), 
         .b_sign(b_sign_dlyd_3),
-        .a_sign_scnd(a_sign_dlyd_4), // Another delay because goes into secons stage
+        .a_sign_scnd(a_sign_dlyd_4), // Another delay because goes into second stage
         .b_sign_scnd(b_sign_dlyd_4),
         .result_sign(result_sign_dlyd_3),
         .carry_out(carry_out),
@@ -580,4 +584,25 @@ module add_sub_main #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
         .R(R)
     );
 
+    // shift register
+    reg [WIDTH-1:0] data_reg_c_r;
+    reg [4:0] en_r;
+
+    always @(posedge clk or negedge arst_n) begin
+        if(!arst_n)
+            en_r <= 5'd0;
+        else
+            en_r <= {en_r[3:0], en};
+    end
+ 
+    always @(posedge clk or negedge arst_n) begin
+        if(!arst_n)
+            data_reg_c_r <= 5'd0;
+        else
+            if(en_r[4])
+                data_reg_c_r <= R;
+	end
+
+	assign data_reg_c = data_reg_c_r;
+ 
 endmodule

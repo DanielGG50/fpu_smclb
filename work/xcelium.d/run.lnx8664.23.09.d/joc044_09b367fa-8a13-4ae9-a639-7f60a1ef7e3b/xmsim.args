@@ -1,0 +1,28 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
++define+alfacen_noaxi_base_test+
+-MESSAGES
+-svseed
+num_seed
+-sndynseed
+num_seed
++EMGRLOG
+./logs/comp.log
+-XLSTIME
+1754598077
+-XLKEEP
+-XLMODE
+./xcelium.d/run.lnx8664.23.09.d
+-RUNMODE
+-CDSLIB
+./xcelium.d/run.lnx8664.23.09.d/cds.lib
+-HDLVAR
+./xcelium.d/run.lnx8664.23.09.d/hdl.var
+-XLNAME
+xrun
+-XLVERSION
+"TOOL:	xrun(64)	23.09-s001"
+-XLNAME
+./xcelium.d/run.lnx8664.23.09.d/joc044_09b367fa-8a13-4ae9-a639-7f60a1ef7e3b

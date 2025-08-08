@@ -27,7 +27,7 @@ analyze -sv add_sub_main_fv.sv
 
 # #REMEMBER TO CHAMGE TOP WHEN TESTING INDIVIDUAL MODULES
 elaborate -bbox_a 65535 -bbox_mul 65535 -top add_sub_main
-#
+
 clock clk
 
 reset -expression !arst_n

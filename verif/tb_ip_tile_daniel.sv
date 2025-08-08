@@ -9,9 +9,9 @@ module tb_ip_tile_daniel;
 	interface_ip_tile intf(clk, arst_n);
 
 	always #5ns clk = !clk;
-	assign #20ns arst_n = 1'b1;
+	//assign #20ns arst_n = 1'b1;
 
-	ip_tile_daniel DUT(
+	ip_tile_daniel_garcia DUT(
 	  .clk(clk),
 	  .arst_n(arst_n),
 	  .csr_in(intf.csr_in),
@@ -24,8 +24,14 @@ module tb_ip_tile_daniel;
 	);
 
 	initial begin
-  	clk = 0;
-  	@(posedge arst_n);	
+		clk = 0;
+		arst_n = 1;	
+	end
+
+
+	initial begin	
+	
+		//@(posedge arst_n);	
 	
 		@(posedge clk); // suma INF + X  
 		intf.write_data_reg_a(32'h7F800000);
@@ -55,7 +61,9 @@ module tb_ip_tile_daniel;
 		intf.write_data_reg_a(32'h4120400A);
 		intf.write_data_reg_b(32'hC120400A);
 		intf.write_csr_in(16'h8010); 
-		
+	
+		#2 arst_n = 0;
+			
 		//@(posedge clk); // suma x + (-x)
 		intf.write_data_reg_a(32'h4120400A);
 		intf.write_data_reg_b(32'hC120400A);
@@ -100,7 +108,9 @@ module tb_ip_tile_daniel;
 		intf.write_data_reg_a(32'hFF882410);
 		intf.write_data_reg_b(32'h41200000);
 		intf.write_csr_in(16'h8000);
-		
+	
+		#2 arst_n = 1;
+	
 		//@(posedge clk); // Suma con +0
 		intf.write_data_reg_a(32'h00000000);
 		intf.write_data_reg_b(32'h41200000);
@@ -154,7 +164,15 @@ module tb_ip_tile_daniel;
 		intf.write_data_reg_a(32'h80000000);
 		intf.write_data_reg_b(32'hC1200000);
 		intf.write_csr_in(16'h0000);
-		
+	
+		intf.write_data_reg_a(32'h601401ff);
+		intf.write_data_reg_b(32'h5054a0c4);
+    intf.write_csr_in(16'h8000);
+
+		intf.write_data_reg_a(32'h601401ff);
+		intf.write_data_reg_b(32'h5156a7c4);
+    intf.write_csr_in(16'h8000);
+
 		intf.write_data_reg_a(32'h41200000);
 		intf.write_data_reg_b(32'h00000000);
 		intf.write_csr_in(16'h8010);

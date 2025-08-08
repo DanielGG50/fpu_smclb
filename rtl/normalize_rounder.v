@@ -115,7 +115,6 @@ module normalize_rounder #(parameter WIDTH = 32) (
     input carry_out,
     input clk,
     input arst_n,
-    output [2:0] GRS,
     output [31:0] R        
 );
 

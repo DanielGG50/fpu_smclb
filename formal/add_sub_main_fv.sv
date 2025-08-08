@@ -25,8 +25,12 @@ module add_sub_main_fv #(parameter WIDTH = 32, EXP_BITS = 8, MANT_BITS = 23)(
 	`define COV(block=fifo, name=no_name, precond=1'b1 |->, consq=1'b0) \
 	``block``_cov_``name``: cover property (@(posedge clk) disable iff(!arst_n) ``precond`` ``consq``);
 
-/*
-function automatic bit [WIDTH-1:0] calculate_shortreal_sum(input bit [WIDTH-1:0] a, b);
+	initial begin
+		a =0;
+		b = 0;
+	end
+
+	function automatic bit [WIDTH-1:0] calculate_shortreal_sum(input bit [WIDTH-1:0] a, b);
   	shortreal shortreal_a, shortreal_b, shortreal_R;
   	shortreal_a = $bitstoshortreal(a);
   	shortreal_b = $bitstoshortreal(b);
@@ -35,16 +39,15 @@ function automatic bit [WIDTH-1:0] calculate_shortreal_sum(input bit [WIDTH-1:0]
 	endfunction
 
 	logic [WIDTH-1:0] R_function;
-
-initial forever begin
-  @(posedge clk);
-  if (arst_n) begin
+/*
+	initial forever begin
+  	@(posedge clk);
     R_function = calculate_shortreal_sum(a, b);
-  end
-end
+	end
 */
+
 	// Normal inputs 
-	//`AST(fpu, add_normal_inputs, ((a[30:23] != 8'h00) && (a[30:23] != 8'hFF) && (b[30:23] != 8'h00) && (b[30:23] != 8'hFF) && (~operation_select)), |-> ##RSLT_DLY R == $past(R_function, RSLT_DLY))
+	`AST(fpu, add_normal_inputs, ((a[30:23] != 8'h00) && (a[30:23] != 8'hFF) && (b[30:23] != 8'h00) && (b[30:23] != 8'hFF) && (~operation_select)), |-> ##RSLT_DLY R == $past(R_function, RSLT_DLY))
 
 
 	// EXCEPTIONS 
